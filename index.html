@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080808">
+<title>So Info — Gestion clients & documents</title>
+<style>
+:root{--yellow:#ffd400;--bg:#090909;--panel:#151515;--panel2:#202020;--text:#f6f6f6;--muted:#a9a9a9;--line:#333}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:18px clamp(14px,4vw,42px);border-bottom:1px solid #282828;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+header img{width:min(100%,410px);max-height:105px;object-fit:contain;object-position:left center}
+header p{color:var(--muted);margin:5px 0 0;font-size:.9rem}
+main{max-width:1200px;margin:auto;padding:22px clamp(12px,3vw,28px) 48px}
+nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:20px}
+nav button,.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:12px 14px;border-radius:12px;font-weight:650;cursor:pointer}
+nav button.active,.btn.primary{background:var(--yellow);border-color:var(--yellow);color:#111}
+.btn.secondary{background:#222}.btn.danger{border-color:#8c3636;color:#ffb8b8;background:#291616}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,.78fr);gap:18px;align-items:start}
+.panel{background:var(--panel);border:1px solid #292929;border-radius:16px;padding:18px;margin-bottom:16px}
+h1{font-size:1.45rem;margin:0 0 6px}h2{font-size:1.08rem;margin:0 0 14px} .muted{color:var(--muted);font-size:.9rem}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;font-size:.86rem;color:#ddd;margin-bottom:6px}
+input,select,textarea{width:100%;background:#0d0d0d;color:var(--text);border:1px solid #3a3a3a;border-radius:9px;padding:11px 12px;font:inherit;min-width:0}
+textarea{min-height:82px;resize:vertical}.wide{grid-column:1/-1}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.list{display:grid;gap:8px}.client{padding:12px;border:1px solid var(--line);border-radius:10px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.client strong{display:block}.client small{color:var(--muted)}.client button{flex-shrink:0}
+.total{font-size:1.25rem;font-weight:800;text-align:right;margin-top:14px;color:var(--yellow)}
+.hidden{display:none!important}.notice{padding:12px;border-left:3px solid var(--yellow);background:#24210e;border-radius:8px;color:#e9e1b8;font-size:.9rem;margin-bottom:16px}
+footer{color:#777;text-align:center;font-size:.8rem;padding:22px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}nav{grid-template-columns:repeat(2,minmax(0,1fr))}header img{width:100%;max-height:85px}.fields{grid-template-columns:1fr}.wide{grid-column:auto}.panel{padding:14px}}
+@media print{body{background:white;color:#111}header,nav,.no-print,footer,.notice{display:none!important}main{padding:0;max-width:none}.panel{background:white;color:#111;border:0;padding:0}.layout{display:block}input,textarea,select{color:#111;background:white;border:0;padding:0}label{color:#444}.muted{color:#444}.print-only{display:block!important}}
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/logo.png" alt="So Info — Réparation & maintenance">
+  <div><strong>Assistant de gestion</strong><p>Clients, prises en charge, devis et factures</p></div>
+</header>
+<main>
+  <div class="notice">Prototype local : les données sont enregistrées dans ce navigateur uniquement. Pense à exporter/sauvegarder tes données. L’envoi automatique d’e-mails nécessite un service d’envoi ou un petit serveur sécurisé.</div>
+  <nav class="no-print" aria-label="Navigation principale">
+    <button class="active" data-tab="clients">Clients</button><button data-tab="prise">Prise en charge</button><button data-tab="devis">Devis</button><button data-tab="facture">Facture</button>
+  </nav>
+  <section id="clients" class="tab">
+    <div class="layout">
+      <div class="panel">
+        <h1>Gestion des clients</h1><p class="muted">Crée une fiche client puis sélectionne-le pour préparer ses documents.</p>
+        <form id="clientForm">
+          <div class="fields">
+            <div><label for="cName">Nom / entreprise *</label><input id="cName" required autocomplete="name"></div>
+            <div><label for="cEmail">E-mail</label><input id="cEmail" type="email" autocomplete="email"></div>
+            <div><label for="cPhone">Téléphone</label><input id="cPhone" type="tel" autocomplete="tel"></div>
+            <div><label for="cCompany">Société (si différente)</label><input id="cCompany"></div>
+            <div class="wide"><label for="cAddress">Adresse</label><textarea id="cAddress" autocomplete="street-address"></textarea></div>
+          </div>
+          <div class="actions"><button class="btn primary" type="submit">Enregistrer le client</button><button class="btn secondary" type="reset">Effacer</button></div>
+        </form>
+      </div>
+      <aside class="panel"><h2>Clients enregistrés</h2><div id="clientList" class="list"></div><div class="actions"><button class="btn secondary" id="exportData">Exporter les données</button><label class="btn secondary" style="cursor:pointer">Importer JSON<input id="importData" type="file" accept="application/json" hidden></label></div></aside>
+    </div>
+  </section>
+  <section id="prise" class="tab hidden">
+    <div class="panel">
+      <h1>Fiche de prise en charge</h1><p class="muted">À remettre au client lors de la récupération de son matériel.</p>
+      <div class="fields">
+        <div><label for="pClient">Client</label><select id="pClient"></select></div>
+        <div><label for="pDate">Date de prise en charge</label><input id="pDate" type="date"></div>
+        <div><label for="pRef">N° de dossier</label><input id="pRef" placeholder="Ex. PC-2026-001"></div>
+        <div><label for="pDevice">Matériel / modèle</label><input id="pDevice" placeholder="PC portable, marque, modèle"></div>
+        <div><label for="pSerial">N° de série</label><input id="pSerial"></div>
+        <div><label for="pAccessories">Accessoires remis</label><input id="pAccessories" placeholder="Chargeur, sacoche…"></div>
+        <div class="wide"><label for="pProblem">Panne déclarée / demande du client</label><textarea id="pProblem"></textarea></div>
+        <div class="wide"><label for="pCondition">État apparent / remarques</label><textarea id="pCondition"></textarea></div>
+        <div class="wide"><label for="pPassword">Informations utiles (éviter les mots de passe)</label><textarea id="pPassword" placeholder="Ne pas noter de mot de passe personnel ici."></textarea></div>
+      </div>
+      <div class="actions no-print"><button class="btn primary" onclick="printDoc('prise')">Imprimer / enregistrer en PDF</button><button class="btn secondary" onclick="emailDoc('prise')">Préparer l’e-mail au client</button></div>
+    </div>
+  </section>
+  <section id="devis" class="tab hidden">
+    <div class="panel">
+      <h1>Créer un devis</h1>
+      <div class="fields">
+        <div><label for="dClient">Client</label><select id="dClient"></select></div><div><label for="dDate">Date</label><input id="dDate" type="date"></div>
+        <div><label for="dNumber">N° de devis</label><input id="dNumber" placeholder="DEV-2026-001"></div><div><label for="dValid">Valable jusqu’au</label><input id="dValid" type="date"></div>
+        <div class="wide"><label for="dDesc">Détail des prestations / pièces</label><textarea id="dDesc" placeholder="Diagnostic, remplacement SSD, main d’œuvre…"></textarea></div>
+        <div><label for="dHT">Montant HT (€)</label><input id="dHT" type="number" min="0" step="0.01" value="0"></div><div><label for="dTVA">TVA (%)</label><input id="dTVA" type="number" min="0" step="0.1" value="20"></div>
+        <div class="wide"><label for="dNotes">Conditions / notes</label><textarea id="dNotes"></textarea></div>
+      </div>
+      <div class="total" id="dTotal">Total TTC : 0,00 €</div>
+      <div class="actions no-print"><button class="btn primary" onclick="printDoc('devis')">Imprimer / enregistrer en PDF</button><button class="btn secondary" onclick="emailDoc('devis')">Préparer l’e-mail</button></div>
+    </div>
+  </section>
+  <section id="facture" class="tab hidden">
+    <div class="panel">
+      <h1>Créer une facture</h1>
+      <div class="fields">
+        <div><label for="fClient">Client</label><select id="fClient"></select></div><div><label for="fDate">Date d’émission</label><input id="fDate" type="date"></div>
+        <div><label for="fNumber">N° de facture</label><input id="fNumber" placeholder="FAC-2026-001"></div><div><label for="fDue">Date d’échéance</label><input id="fDue" type="date"></div>
+        <div class="wide"><label for="fDesc">Prestations / pièces facturées</label><textarea id="fDesc" placeholder="Dépannage, pièces, main d’œuvre…"></textarea></div>
+        <div><label for="fHT">Montant HT (€)</label><input id="fHT" type="number" min="0" step="0.01" value="0"></div><div><label for="fTVA">TVA (%)</label><input id="fTVA" type="number" min="0" step="0.1" value="20"></div>
+        <div class="wide"><label for="fNotes">Mode de règlement / mentions</label><textarea id="fNotes" placeholder="Virement, espèces…"></textarea></div>
+      </div>
+      <div class="total" id="fTotal">Total TTC : 0,00 €</div>
+      <div class="actions no-print"><button class="btn primary" onclick="printDoc('facture')">Imprimer / enregistrer en PDF</button><button class="btn secondary" onclick="emailDoc('facture')">Préparer l’e-mail</button></div>
+    </div>
+  </section>
+</main>
+<footer>So Info · Réparation & maintenance · Document à vérifier avant envoi au client.</footer>
+<script>
+const $=id=>document.getElementById(id);
+let clients=JSON.parse(localStorage.getItem('soinfo_clients')||'[]');
+let selectedClient=localStorage.getItem('soinfo_selected')||'';
+const today=new Date().toISOString().slice(0,10);
+['pDate','dDate','fDate'].forEach(id=>$(id).value=today);
+function save(){localStorage.setItem('soinfo_clients',JSON.stringify(clients));localStorage.setItem('soinfo_selected',selectedClient)}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderClients(){
+  $('clientList').innerHTML=clients.length?clients.map(c=>`<div class="client"><div><strong>${esc(c.name)}</strong><small>${esc(c.email||'Sans e-mail')} · ${esc(c.phone||'')}</small></div><div><button class="btn secondary" onclick="chooseClient('${c.id}')">Choisir</button> <button class="btn danger" onclick="deleteClient('${c.id}')">×</button></div></div>`).join(''):'<p class="muted">Aucun client pour le moment.</p>';
+  ['pClient','dClient','fClient'].forEach(id=>{$(id).innerHTML='<option value="">— Choisir un client —</option>'+clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');$(id).value=selectedClient});
+}
+$('clientForm').addEventListener('submit',e=>{e.preventDefault();const c={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),name:$('cName').value.trim(),email:$('cEmail').value.trim(),phone:$('cPhone').value.trim(),company:$('cCompany').value.trim(),address:$('cAddress').value.trim()};clients.push(c);selectedClient=c.id;save();renderClients();e.target.reset()});
+window.chooseClient=id=>{selectedClient=id;save();renderClients();document.querySelector('[data-tab="prise"]').click()};
+window.deleteClient=id=>{if(confirm('Supprimer ce client ?')){clients=clients.filter(c=>c.id!==id);if(selectedClient===id)selectedClient='';save();renderClients()}};
+['pClient','dClient','fClient'].forEach(id=>$(id).addEventListener('change',e=>{selectedClient=e.target.value;save();['pClient','dClient','fClient'].forEach(x=>$(x).value=selectedClient)}));
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.tab))}));
+function euro(n){return (Number(n)||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}
+function updateTotal(prefix){const ht=Number($(prefix+'HT').value)||0,tva=Number($(prefix+'TVA').value)||0;$(prefix+'Total').textContent=`Total TTC : ${euro(ht*(1+tva/100))} (TVA ${euro(ht*tva/100)})`}
+['d','f'].forEach(p=>[p+'HT',p+'TVA'].forEach(id=>$(id).addEventListener('input',()=>updateTotal(p))));
+function clientFor(id){return clients.find(c=>c.id===$(id).value)||null}
+function val(id){return $(id).value.trim()}
+function documentText(type){
+ let c=clientFor(type==='prise'?'pClient':type==='devis'?'dClient':'fClient');
+ let title=type==='prise'?'FICHE DE PRISE EN CHARGE':type==='devis'?'DEVIS':'FACTURE';
+ let fields=type==='prise'?[['Date',val('pDate')],['N° de dossier',val('pRef')],['Matériel',val('pDevice')],['N° de série',val('pSerial')],['Accessoires',val('pAccessories')],['Panne déclarée',val('pProblem')],['État apparent / remarques',val('pCondition')],['Informations utiles',val('pPassword')]]:type==='devis'?[['N° de devis',val('dNumber')],['Date',val('dDate')],['Valable jusqu’au',val('dValid')],['Prestations / pièces',val('dDesc')],['Montant HT',euro(val('dHT'))],['TVA',val('dTVA')+' %'],['Total TTC',euro((Number(val('dHT'))||0)*(1+(Number(val('dTVA'))||0)/100))],['Conditions / notes',val('dNotes')]]:[['N° de facture',val('fNumber')],['Date d’émission',val('fDate')],['Échéance',val('fDue')],['Prestations / pièces',val('fDesc')],['Montant HT',euro(val('fHT'))],['TVA',val('fTVA')+' %'],['Total TTC',euro((Number(val('fHT'))||0)*(1+(Number(val('fTVA'))||0)/100))],['Règlement / mentions',val('fNotes')]];
+ return {c,title,fields};
+}
+window.printDoc=type=>{
+ const d=documentText(type);const w=window.open('','_blank');if(!w){alert('Autorise les fenêtres contextuelles pour générer le document.');return}
+ w.document.write(`<html lang="fr"><head><meta charset="utf-8"><title>${esc(d.title)}</title><style>body{font:14px Arial,sans-serif;color:#111;margin:40px}h1{border-bottom:3px solid #ffd400;padding-bottom:12px}h2{margin-top:28px}p{white-space:pre-wrap;line-height:1.5}.meta{color:#444}footer{margin-top:40px;border-top:1px solid #ccc;padding-top:12px;font-size:11px}</style></head><body><h1>${esc(d.title)}</h1><p class="meta"><b>So Info — Réparation & maintenance</b></p><h2>Client</h2><p>${esc(d.c?.name||'Client non renseigné')}\n${esc(d.c?.company||'')}\n${esc(d.c?.address||'')}\n${esc(d.c?.email||'')}\n${esc(d.c?.phone||'')}</p>${d.fields.map(([k,v])=>`<h2>${esc(k)}</h2><p>${esc(v||'—')}</p>`).join('')}<footer>Document généré avec l’assistant So Info. Vérifier les informations et mentions légales avant utilisation.</footer><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();
+};
+window.emailDoc=type=>{const d=documentText(type);if(!d.c?.email){alert('Ajoute une adresse e-mail à ce client pour préparer le message.');return}const subject=encodeURIComponent(type==='prise'?'So Info — Confirmation de prise en charge':type==='devis'?'So Info — Votre devis':'So Info — Votre facture');const body=encodeURIComponent(`Bonjour ${d.c.name},\n\nVeuillez trouver ci-joint votre ${type==='prise'?'fiche de prise en charge':type==='devis'?'devis':'facture'} So Info. Pensez à joindre le PDF que vous venez d’enregistrer.\n\nCordialement,\nSo Info — Réparation & maintenance`);location.href=`mailto:${encodeURIComponent(d.c.email)}?subject=${subject}&body=${body}`};
+$('exportData').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({clients,selectedClient},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='soinfo-sauvegarde.json';a.click();URL.revokeObjectURL(a.href)});
+$('importData').addEventListener('change',async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.clients))throw Error();clients=data.clients;selectedClient=data.selectedClient||'';save();renderClients();alert('Import terminé.')}catch{alert('Fichier JSON invalide.')}e.target.value=''});
+renderClients();updateTotal('d');updateTotal('f');
+</script>
+</body></html>
