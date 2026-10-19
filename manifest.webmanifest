@@ -1,0 +1,11 @@
+{
+  "name": "So Info — Gestion",
+  "short_name": "So Info",
+  "description": "Gestion des clients, devis, factures et prises en charge So Info",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#111111",
+  "orientation": "portrait"
+}
