@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111"><meta name="description" content="So Info Gestion — Réparation & Maintenance">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icons/icon-192.png"><link rel="stylesheet" href="./styles.css">
+<title>So Info Gestion</title>
+</head>
+<body>
+<div class="shell">
+<header class="topbar"><div class="brand"><img src="./logo-so-info.jpg" alt="So Info — Réparation & Maintenance"><div><b>So Info Gestion</b><small>Réparation &amp; Maintenance</small></div></div><button class="icon-btn" data-nav="settings" aria-label="Réglages">⚙</button></header>
+<main id="main">
+<section class="page active" id="page-dashboard">
+<div class="welcome"><div><p class="eyebrow">ESPACE PROFESSIONNEL</p><h1>Bonjour 👋</h1><p class="muted">Votre activité en un coup d’œil.</p></div><span class="date-pill" id="today"></span></div>
+<div class="stats-grid"><article class="stat-card"><span>♙ Clients</span><strong id="statClients">0</strong></article><article class="stat-card"><span>▤ Devis</span><strong id="statQuotes">0</strong></article><article class="stat-card"><span>€ Factures</span><strong id="statInvoices">0</strong></article><article class="stat-card"><span>⌁ Dossiers actifs</span><strong id="statJobs">0</strong></article></div>
+<div class="section-heading"><h2>Créer rapidement</h2></div><div class="quick-grid">
+<button class="quick-card" data-action="new-client"><span>＋</span><b>Nouveau client</b></button><button class="quick-card" data-action="new-quote"><span>▤</span><b>Nouveau devis</b></button><button class="quick-card" data-action="new-invoice"><span>€</span><b>Nouvelle facture</b></button><button class="quick-card" data-action="new-intake"><span>⌁</span><b>Prise en charge</b></button></div>
+<div class="section-heading"><h2>Documents récents</h2><button class="text-btn" data-nav="documents">Tout voir →</button></div><div id="recentDocuments" class="stack"></div>
+<div class="notice"><b>Stockage local sur cet appareil.</b><br>Exportez régulièrement une sauvegarde depuis Réglages. Cette version ne synchronise pas encore les données entre appareils.</div>
+</section>
+<section class="page" id="page-clients"><div class="page-heading"><div><p class="eyebrow">RÉPERTOIRE</p><h1>Clients</h1><p class="muted">Retrouvez et gérez vos contacts.</p></div><button class="primary-btn" data-action="new-client">＋ Ajouter</button></div><div class="toolbar"><input id="clientSearch" type="search" placeholder="Rechercher un client…" aria-label="Rechercher un client"><select id="clientSort" aria-label="Trier"><option value="recent">Plus récents</option><option value="name">Nom A–Z</option></select></div><div id="clientsList" class="stack"></div></section>
+<section class="page" id="page-documents"><div class="page-heading"><div><p class="eyebrow">GESTION COMMERCIALE</p><h1>Documents</h1><p class="muted">Devis, factures et fiches atelier.</p></div></div><div class="segmented"><button class="selected" data-doc-filter="all">Tous</button><button data-doc-filter="quote">Devis</button><button data-doc-filter="invoice">Factures</button><button data-doc-filter="intake">Prises en charge</button></div><div id="documentsList" class="stack"></div><div class="quick-grid compact"><button class="quick-card" data-action="new-quote"><span>＋</span><b>Créer un devis</b></button><button class="quick-card" data-action="new-invoice"><span>＋</span><b>Créer une facture</b></button><button class="quick-card" data-action="new-intake"><span>＋</span><b>Prise en charge</b></button></div></section>
+<section class="page" id="page-settings"><div class="page-heading"><div><p class="eyebrow">CONFIGURATION</p><h1>Réglages</h1><p class="muted">Identité, sauvegardes et journal technique.</p></div></div>
+<form id="settingsForm" class="panel form-grid"><h2 class="full">Entreprise</h2>
+<label>Nom commercial<input name="businessName" value="So Info"></label><label>Nom et prénom<input name="owner" placeholder="À renseigner"></label><label>Adresse e-mail<input name="email" type="email" value="gerard.sylvain60@gmail.com"></label><label>Téléphone<input name="phone" type="tel"></label><label class="full">Adresse<input name="address"></label><label>Code postal<input name="postcode"></label><label>Ville<input name="city"></label><label>SIREN<input name="siren" inputmode="numeric"></label><label>SIRET<input name="siret" inputmode="numeric"></label><label>Statut juridique<input name="legalStatus" value="Micro-entreprise"></label><label>TVA<select name="vatMode"><option value="exempt">Franchise en base — à confirmer</option><option value="standard">TVA applicable (taux à préciser par ligne)</option></select></label><label class="full">Mention TVA personnalisée<input name="vatNotice" placeholder="Vérifiez la mention applicable à votre situation"></label><label class="full">Conditions de règlement<textarea name="paymentTerms" rows="2" placeholder="À renseigner"></textarea></label><label class="full">Mentions complémentaires<textarea name="legalNotes" rows="2"></textarea></label>
+<div class="full actions"><button class="primary-btn" type="submit">Enregistrer les réglages</button></div></form>
+<div class="panel"><h2>Sauvegarde et restauration</h2><p class="muted">La sauvegarde contient vos clients, documents et réglages. Conservez-la dans un endroit privé.</p><div class="actions wrap"><button class="primary-btn" id="exportBackup">Exporter la sauvegarde JSON</button><label class="secondary-btn file-label">Restaurer une sauvegarde<input id="importBackup" type="file" accept="application/json,.json" hidden></label></div></div>
+<div class="panel"><h2>Journal technique</h2><p class="muted">Les événements sont enregistrés sans signatures ni mots de passe.</p><div class="actions"><button class="secondary-btn" id="exportLogs">Exporter le journal JSON</button><button class="secondary-btn" id="clearLogs">Effacer le journal</button></div><div id="logsList" class="logs"></div></div>
+<div class="panel"><h2>À propos</h2><p class="muted">Version initiale locale. Les données ne sont pas envoyées à un serveur. L'envoi réel d'e-mails, la synchronisation distante et les tests sur appareil physique nécessitent une configuration et une validation séparées.</p></div>
+</section>
+</main>
+<nav class="bottom-nav" aria-label="Navigation principale"><button class="nav-item active" data-nav="dashboard"><span>⌂</span>Accueil</button><button class="nav-item" data-nav="clients"><span>♙</span>Clients</button><button class="nav-item" data-nav="documents"><span>▤</span>Documents</button><button class="nav-item" data-nav="settings"><span>⚙</span>Réglages</button></nav>
+</div>
+<div id="modalRoot"></div><div id="toast" role="status" aria-live="polite"></div>
+<script src="./app.js"></script>
+</body></html>
