@@ -1,11 +1,23 @@
 {
-  "name": "So Info — Gestion",
+  "name": "So Info Gestion",
   "short_name": "So Info",
-  "description": "Gestion des clients, devis, factures et prises en charge So Info",
+  "description": "Gestion d'activité So Info — Réparation & Maintenance",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f3f4f6",
   "theme_color": "#111111",
-  "orientation": "portrait"
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
