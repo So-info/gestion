@@ -157,6 +157,35 @@ textarea{min-height:94px}
 .top-services b{font-size:9px;letter-spacing:.55px;color:#f3f3f3}
 @media(max-width:420px){.top{padding:10px 10px 0}.toprow{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;min-height:72px}.brand-wrap{padding:4px;border-radius:10px}.brand{max-height:59px}.topcopy{gap:4px}.hero-kicker{font-size:8px;letter-spacing:.7px}.topcopy strong{font-size:10px;line-height:1.28}.hero-desc{font-size:11px}.hero-status{font-size:8px;padding:3px 6px}.top-services{margin-top:8px;padding:7px 0 8px;gap:5px}.top-services span{gap:3px;padding:7px 2px;font-size:11px}.top-services b{font-size:8px;letter-spacing:0}}
 @media(min-width:700px){.top{padding-left:22px;padding-right:22px}.toprow{min-height:100px;grid-template-columns:290px 1fr;gap:24px}.brand-wrap{padding:8px 12px}.brand{max-height:74px}.topcopy{gap:7px}.hero-kicker{font-size:10px}.topcopy strong{font-size:16px}.hero-desc{font-size:14px}.hero-status{font-size:10px}.top-services{margin-top:12px;padding-bottom:12px}.top-services span{justify-content:flex-start;padding:9px 14px}.top-services b{font-size:10px}}
+
+/* Zones de signature optimisées pour le doigt sur smartphone */
+.signatures-form{padding:14px}
+.signature-grid{grid-template-columns:1fr 1fr;gap:14px}
+.signature-card{padding:13px;border-radius:18px;background:#fff}
+.signature-card h3{font-size:15px;line-height:1.35}
+.signature-card p{font-size:13px;margin-bottom:10px}
+.signature-wrap{border:2px dashed #c5cbd4;border-radius:16px;background:#fff;overflow:hidden}
+.signature-wrap canvas{display:block;width:100%;height:220px;touch-action:none;cursor:crosshair;background:repeating-linear-gradient(to bottom,#fff 0,#fff 53px,#eef0f3 54px,#fff 55px)}
+.signature-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;background:#f7f8fa;border-top:1px solid #e5e7eb}
+.sig-label{font-size:12px;line-height:1.35;max-width:65%}
+.signature-controls .btn{flex:0 0 auto;min-width:92px;min-height:44px}
+@media(max-width:600px){
+ .signature-grid{grid-template-columns:1fr!important;gap:14px}
+ .signature-card{padding:12px}
+ .signature-card h3{font-size:16px}
+ .signature-card p{font-size:14px}
+ .signature-wrap canvas{height:240px}
+ .signature-controls{padding:10px}
+ .sig-label{font-size:13px;max-width:68%}
+ .signature-controls .btn{min-width:104px;min-height:46px}
+}
+@media(max-width:380px){
+ .signature-wrap canvas{height:220px}
+ .signature-controls{align-items:stretch;flex-direction:column}
+ .sig-label{max-width:none}
+ .signature-controls .btn{width:100%}
+}
+
 </style>
 </head>
 <body>
@@ -212,7 +241,7 @@ function signatureHTML(id){return `<div class="signature-wrap"><canvas id="${id}
 function settingsHTML(){let c=db.company;return `<h1 class="page-title">Réglages</h1><p class="sub">Ces informations apparaissent sur les devis, factures et fiches de So Info.</p><div class="panel"><form id="settingsForm" class="grid">${field("Nom commercial","sName",c.name)}${field("Nom du responsable","sOwner",c.owner)}${field("Activité","sActivity",c.activity)}${field("SIRET (14 chiffres)","sSiret",c.siret,"text","inputmode='numeric' maxlength='14'")}${field("Adresse","sAddress",c.address)}${field("Code postal","sPostal",c.postal,"text","inputmode='numeric'")}${field("Ville","sCity",c.city)}${field("Téléphone","sPhone",c.phone,"tel")}${field("E-mail","sEmail",c.email,"email") }<div class="field"><label>Régime de TVA</label><select name="sVatMode" id="sVatMode"><option value="franchise" ${c.vatMode==="franchise"?"selected":""}>Franchise en base de TVA (si applicable)</option><option value="assujetti" ${c.vatMode==="assujetti"?"selected":""}>Assujetti à la TVA</option></select></div>${field("N° de TVA intracommunautaire","sVatNumber",c.vatNumber)}${field("Conditions de paiement","sPayment",c.payment)}${area("Mentions complémentaires","sLegal",c.legal,true)}<div class="field full"><button class="btn primary" type="submit">Enregistrer les réglages</button></div></form></div><div class="panel"><h2>Sauvegarde et transfert</h2><p class="settings-note">Les données restent dans le navigateur de cet appareil. Exporte régulièrement une sauvegarde. Sur iPhone, conserve le fichier dans Fichiers/iCloud Drive. L’import remplace les données présentes.</p><div class="actions"><button class="btn dark" data-action="export-data">⬇ Exporter mes données</button><button class="btn outline" data-action="import-data">⬆ Importer une sauvegarde</button><button class="btn danger" data-action="reset-data">Effacer toutes les données</button></div><input type="file" id="importFile" accept="application/json,.json" class="hidden"></div><div class="notice">Important : le SIRET et les informations de TVA sont préremplis ou modifiables, mais vérifie leur exactitude et les mentions légales applicables à ton régime avant d’émettre des documents.</div>`}
 function wireDynamic(){if(page==="devis"||page==="factures"){addLine(false);updateTotals();setupSignature("docClientSig");setupSignature("docTechSig");}if(page==="fiches"){setupSignature("clientSig");setupSignature("techSig");} }
 let signatureData={};
-function setupSignature(id){let canvas=document.getElementById(id);if(!canvas)return;let ctx=canvas.getContext("2d"),ratio=Math.max(window.devicePixelRatio||1,1);canvas.width=canvas.clientWidth*ratio;canvas.height=canvas.clientHeight*ratio;ctx.scale(ratio,ratio);ctx.lineWidth=2.4;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#111";let drawing=false,last=null;const point=e=>{let r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}};canvas.onpointerdown=e=>{e.preventDefault();drawing=true;last=point(e);canvas.setPointerCapture?.(e.pointerId);ctx.beginPath();ctx.moveTo(last.x,last.y)};canvas.onpointermove=e=>{if(!drawing)return;e.preventDefault();let p=point(e);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;signatureData[id]=canvas.toDataURL("image/png")};const end=()=>{if(drawing){drawing=false;signatureData[id]=canvas.toDataURL("image/png")}};canvas.onpointerup=end;canvas.onpointercancel=end;canvas.onpointerleave=end}
+function setupSignature(id){let canvas=document.getElementById(id);if(!canvas)return;let ctx=canvas.getContext("2d"),ratio=Math.max(window.devicePixelRatio||1,1);canvas.width=canvas.clientWidth*ratio;canvas.height=canvas.clientHeight*ratio;ctx.scale(ratio,ratio);ctx.lineWidth=3.4;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#111";let drawing=false,last=null;const point=e=>{let r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}};canvas.onpointerdown=e=>{e.preventDefault();drawing=true;last=point(e);canvas.setPointerCapture?.(e.pointerId);ctx.beginPath();ctx.moveTo(last.x,last.y)};canvas.onpointermove=e=>{if(!drawing)return;e.preventDefault();let p=point(e);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;signatureData[id]=canvas.toDataURL("image/png")};const end=()=>{if(drawing){drawing=false;signatureData[id]=canvas.toDataURL("image/png")}};canvas.onpointerup=end;canvas.onpointercancel=end;canvas.onpointerleave=end}
 function getSignature(id){const canvas=document.getElementById(id);if(!canvas)return signatureData[id]||"";try{const data=canvas.toDataURL("image/png");signatureData[id]=data;return data;}catch(e){return signatureData[id]||""}}
 function clearSignature(id){let c=document.getElementById(id);if(!c)return;let ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);signatureData[id]="";toast("Signature effacée.")}
 function addLine(focus=true){let box=document.getElementById("lines");if(!box)return;let id="ln"+Math.random().toString(36).slice(2,8);box.insertAdjacentHTML("beforeend",`<div class="line-item" data-line="${id}"><div class="line-grid"><div class="field"><label>Désignation</label><input class="ln-desc" placeholder="Ex. Diagnostic, SSD 1 To…" required></div><div class="field"><label>Qté</label><input class="ln-qty" type="number" min="0.01" step="0.01" value="1" inputmode="decimal"></div><div class="field price-field"><label>Prix unitaire HT (€)</label><input class="ln-price" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div></div><div class="line-bottom"><span>Montant HT : <strong class="ln-total">0,00 €</strong></span><button type="button" class="btn danger" data-action="remove-line" data-id="${id}">Supprimer</button></div></div>`);box.querySelectorAll("input").forEach(el=>el.addEventListener("input",updateTotals));if(focus)box.lastElementChild.querySelector(".ln-desc").focus();updateTotals()}
